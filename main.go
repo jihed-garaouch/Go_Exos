@@ -3,40 +3,40 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
-var dictionary = make(map[string]string)
+type Task struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+}
+
+var tasks = []Task{
+	{ID: 1, Title: "Task 1"},
+	{ID: 2, Title: "Task 2"},
+}
+var nextID = 3
 
 func main() {
 	r := gin.Default()
 
-	r.GET("/words", func(c *gin.Context) {
-		c.JSON(http.StatusOK, dictionary)
+	r.GET("/tasks", func(c *gin.Context) {
+		c.JSON(http.StatusOK, tasks)
 	})
-	r.DELETE("/delete/:word", func(c *gin.Context) {
-		word := c.Param("word")
-		_, ok := dictionary[word]
-		if !ok {
-			c.JSON(http.StatusNotFound, gin.H{"error": "word not found"})
+	r.DELETE("/tasks/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
 			return
 		}
-		delete(dictionary, word)
-		c.JSON(http.StatusOK, gin.H{"message": "word has been deleted successfully"})
-	})
-	r.POST("/add", func(c *gin.Context) {
-		var request struct {
-			Word       string `json:"word"`
-			Definition string `json:"definition"`
+		for i, task := range tasks {
+			if id == task.ID {
+				tasks = append(tasks[:i], tasks[i+1:]...)
+				c.JSON(http.StatusOK, gin.H{"message": "task est supprimé"})
+				return
+			}
 		}
-
-		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Format JSON invalide"})
-			return
-		}
-
-		dictionary[request.Word] = request.Definition
-
-		c.JSON(http.StatusOK, gin.H{"message": "Mot ajouté avec succès"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "task n'est pas trouvé"})
 	})
 
 	r.Run(":8080")
