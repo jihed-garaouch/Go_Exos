@@ -13,7 +13,16 @@ func main() {
 	r.GET("/words", func(c *gin.Context) {
 		c.JSON(http.StatusOK, dictionary)
 	})
-
+	r.DELETE("/delete/:word", func(c *gin.Context) {
+		word := c.Param("word")
+		_, ok := dictionary[word]
+		if !ok {
+			c.JSON(http.StatusNotFound, gin.H{"error": "word not found"})
+			return
+		}
+		delete(dictionary, word)
+		c.JSON(http.StatusOK, gin.H{"message": "word has been deleted successfully"})
+	})
 	r.POST("/add", func(c *gin.Context) {
 		var request struct {
 			Word       string `json:"word"`
