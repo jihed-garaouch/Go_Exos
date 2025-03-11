@@ -3,21 +3,52 @@ package handlers
 import (
 	"GOExo/models"
 	"net/http"
+	"fmt"
+	"os"
 	"time"
     "sync"
 	"log/slog"
 	"github.com/gin-gonic/gin"
 )
+const taskFile = "tasks.json"
 
-// Liste des tâches (stockée en mémoire)
-var tasks = []models.Task{
-	{ID: "1", Title: "Apprendre Go"},
-	{ID: "2", Title: "Développer une API"},
+
+func loadTasksFromFile() []models.Task {
+	file, err := os.ReadFile(taskFile)
+	if err != nil {
+
+		if os.IsNotExist(err) {
+			return []models.Task{}
+		}
+		fmt.Println("Error reading file:", err)
+		return []models.Task{}
+	}
+
+	var loadedTasks []models.Task
+	if err := json.Unmarshal(file, &loadedTasks); err != nil {
+		fmt.Println("Error parsing JSON:", err)
+		return []models.Task{}
+	}
+
+	return loadedTasks
+}
+
+func saveTasksToFile(tasks []models.Task) {
+	data, err := json.MarshalIndent(tasks, "", "  ")
+	if err != nil {
+		fmt.Println("Error encoding JSON:", err)
+		return
+	}
+
+	err = os.WriteFile(taskFile, data, 0644)
+	if err != nil {
+		fmt.Println("Error writing file:", err)
+	}
 }
 
 // Récupérer toutes les tâches
 func GetTasks(c *gin.Context) {
-	c.JSON(http.StatusOK, tasks)
+	c.JSON(http.StatusOK,  loadTasksFromFile())
 }
 func simulateTask(id int, wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -60,8 +91,9 @@ func AddTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Format JSON invalide"})
 		return
 	}
-
+    tasks := loadTasksFromFile()
 	tasks = append(tasks, newTask)
+	saveTasksToFile(tasks)
 	c.JSON(http.StatusCreated, newTask)
 }
 
@@ -69,7 +101,7 @@ func AddTask(c *gin.Context) {
 func DeleteTask(c *gin.Context) {
 	id := c.Param("id")
 	index := -1
-
+    tasks := loadTasksFromFile()
 	for i, task := range tasks {
 		if task.ID == id {
 			index = i
@@ -83,5 +115,6 @@ func DeleteTask(c *gin.Context) {
 	}
 
 	tasks = append(tasks[:index], tasks[index+1:]...)
+	saveTasksToFile(tasks)
 	c.JSON(http.StatusOK, gin.H{"message": "Tâche supprimée avec succès"})
 }
