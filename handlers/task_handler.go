@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"Go_API/Go_Exos/models"
+	"GOExo/models"
 	"net/http"
-
+	"time"
+    "fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,17 @@ var tasks = []models.Task{
 // Récupérer toutes les tâches
 func GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
+}
+
+func PrintWithDelay(){
+    time.Sleep(5 * time.Second)
+    fmt.Println("Done.")
+}
+
+func DelayProccessTask(c *gin.Context){
+
+    go PrintWithDelay()
+   c.JSON(http.StatusOK)
 }
 
 // Ajouter une nouvelle tâche

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Go_Exos/routes"
+	"GOExo/routes"
 
 	"github.com/gin-gonic/gin"
 )
