@@ -27,7 +27,7 @@ func PrintWithDelay(){
 func DelayProccessTask(c *gin.Context){
 
     go PrintWithDelay()
-   c.JSON(http.StatusOK)
+     c.JSON(http.StatusOK, gin.H{"message": "Task is Proccessing"})
 }
 
 // Ajouter une nouvelle tâche
