@@ -22,7 +22,7 @@ func GetTasks(c *gin.Context) {
 
 func PrintWithDelay(){
     time.Sleep(5 * time.Second)
-    log.Println("Task is Done")
+    slog.Info("Task is Done")
 }
 
 func DelayProccessTask(c *gin.Context){
