@@ -4,7 +4,7 @@ import (
 	"GOExo/models"
 	"net/http"
 	"time"
-    
+    "sync"
 	"log/slog"
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +18,27 @@ var tasks = []models.Task{
 // Récupérer toutes les tâches
 func GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
+}
+func simulateTask(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	duration := time.Duration(id+2) * time.Second // Random duration between 2-5 seconds
+	slog.Info("Task %d started, will take %v seconds\n", id, duration)
+	time.Sleep(duration)
+	slog.Info("Task %d completed\n", id)
+}
+
+func HandleMultipleTask(c *gin.Context) {
+	var wg sync.WaitGroup
+	numTasks := 5
+
+	for i := 1; i <= numTasks; i++ {
+		wg.Add(1)
+		go simulateTask(i, &wg)
+	}
+
+	wg.Wait()
+	 c.JSON(http.StatusOK, gin.H{"message": "All Task are Done"})
+
 }
 
 func PrintWithDelay(){
