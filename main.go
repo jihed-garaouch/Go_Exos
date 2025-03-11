@@ -1,34 +1,17 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-)
+	"Go_Exos/routes"
 
-var dictionary = make(map[string]string)
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	r := gin.Default()
 
-	r.GET("/words", func(c *gin.Context) {
-		c.JSON(http.StatusOK, dictionary)
-	})
+	// Enregistrer les routes des tâches
+	routes.RegisterTaskRoutes(r)
 
-	r.POST("/add", func(c *gin.Context) {
-		var request struct {
-			Word       string `json:"word"`
-			Definition string `json:"definition"`
-		}
-
-		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Format JSON invalide"})
-			return
-		}
-
-		dictionary[request.Word] = request.Definition
-
-		c.JSON(http.StatusOK, gin.H{"message": "Mot ajouté avec succès"})
-	})
-
+	// Démarrer le serveur
 	r.Run(":8080")
 }
