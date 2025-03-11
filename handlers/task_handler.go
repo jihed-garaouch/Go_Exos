@@ -3,7 +3,9 @@ package handlers
 import (
 	"GOExo/models"
 	"net/http"
-	"fmt"
+	"encoding/json"
+
+
 	"os"
 	"time"
     "sync"
@@ -20,13 +22,13 @@ func loadTasksFromFile() []models.Task {
 		if os.IsNotExist(err) {
 			return []models.Task{}
 		}
-		fmt.Println("Error reading file:", err)
+		slog.Info("error reading f:", err)
 		return []models.Task{}
 	}
 
 	var loadedTasks []models.Task
 	if err := json.Unmarshal(file, &loadedTasks); err != nil {
-		fmt.Println("Error parsing JSON:", err)
+		slog.Info("Error parsing JSON:", err)
 		return []models.Task{}
 	}
 
@@ -36,13 +38,13 @@ func loadTasksFromFile() []models.Task {
 func saveTasksToFile(tasks []models.Task) {
 	data, err := json.MarshalIndent(tasks, "", "  ")
 	if err != nil {
-		fmt.Println("Error encoding JSON:", err)
+		slog.Info("Error encoding JSON:", err)
 		return
 	}
 
 	err = os.WriteFile(taskFile, data, 0644)
 	if err != nil {
-		fmt.Println("Error writing file:", err)
+		slog.Info("Error writing file:", err)
 	}
 }
 
