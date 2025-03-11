@@ -4,7 +4,7 @@ import (
 	"GOExo/models"
 	"net/http"
 	"time"
-    "fmt"
+    
 	"log/slog"
 	"github.com/gin-gonic/gin"
 )
