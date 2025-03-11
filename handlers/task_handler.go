@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
     "fmt"
+	"log/slog"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,7 +22,7 @@ func GetTasks(c *gin.Context) {
 
 func PrintWithDelay(){
     time.Sleep(5 * time.Second)
-    fmt.Println("Done.")
+    log.Println("Task is Done")
 }
 
 func DelayProccessTask(c *gin.Context){
