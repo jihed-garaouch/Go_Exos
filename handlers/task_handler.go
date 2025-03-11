@@ -55,9 +55,9 @@ func GetTasks(c *gin.Context) {
 func simulateTask(id int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	duration := time.Duration(id+2) * time.Second
-	slog.Info("Task started", "id", id, "duration", duration)
+	slog.Info("Task started")
     time.Sleep(duration)
-    slog.Info("Task completed", "id", id)
+    slog.Info("Task completed")
 }
 
 func HandleMultipleTask(c *gin.Context) {
