@@ -12,5 +12,6 @@ func RegisterTaskRoutes(router *gin.Engine) {
 	router.POST("/tasks", handlers.AddTask)          // Ajouter une nouvelle tâche
 	router.DELETE("/tasks/:id", handlers.DeleteTask) // Supprimer une tâche
 	router.GET("/tasks/process", handlers.DelayProccessTask)
+	router.GET("/tasks/multiprocess", handlers.HandleMultipleTask)
 
 }
